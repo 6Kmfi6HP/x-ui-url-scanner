@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Upload, Play, Save, Edit3, AlertTriangle } from 'lucide-react';
+import { xui } from './xui';
 
 function App() {
   const [urls, setUrls] = useState<string[]>([]);
@@ -28,18 +29,21 @@ function App() {
     setUrls(urlList);
   };
 
-  const simulateXUITest = async (url: string) => {
-    // Simulate a random result
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 1000));
-    const status = Math.random() > 0.5 ? 'Success' : 'Failed';
-    return { url, status };
+  const performXUITest = async (url: string) => {
+    try {
+      const result = await xui(url);
+      return { url, status: result ? 'Success' : 'Failed' };
+    } catch (error) {
+      console.error(`Error scanning ${url}:`, error);
+      return { url, status: 'Error' };
+    }
   };
 
   const startScanning = async () => {
     setScanning(true);
     setResults([]);
     for (const url of urls) {
-      const result = await simulateXUITest(url);
+      const result = await performXUITest(url);
       setResults(prev => [...prev, result]);
     }
     setScanning(false);
@@ -59,12 +63,12 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-        <h1 className="text-2xl font-bold mb-6 text-center">URL Scanner</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">XUI Panel URL Scanner</h1>
         
         <div className="mb-6 p-4 bg-yellow-100 rounded-md flex items-start">
           <AlertTriangle className="flex-shrink-0 h-5 w-5 text-yellow-400 mt-0.5 mr-3" />
           <p className="text-sm text-yellow-700">
-            Note: This is a simulated version. For actual scanning, a backend service would be required to handle HTTP requests securely.
+            Warning: This scanner performs real HTTP requests. Use responsibly and only scan URLs you have permission to test.
           </p>
         </div>
 

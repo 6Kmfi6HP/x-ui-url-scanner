@@ -1,0 +1,1 @@
+export function xui(url: string): Promise<boolean>;
